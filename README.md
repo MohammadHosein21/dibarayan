@@ -5,4 +5,5 @@ In this project, we first create an ssh connection and send a configuration file
 - Python
 - Celery
 - Redis
+- Docker
 
