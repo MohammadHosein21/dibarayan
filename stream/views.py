@@ -1,26 +1,27 @@
+import celery
 from django.shortcuts import render
 from .utils import send_config_to_client
-from .utils import run_docker_container
 from .tasks import process_received_data
 from .models import Client
-import redis
+
 
 def send_config_and_run_docker(request, client_id):
     client = Client.objects.get(name=client_id)
 
-    # Replace these values with your actual configuration
-    config = "sender_config:\nserver_ip: 192.168.1.4\nport: 6379\nsend_rate: 10\ncelery_task_name: process_received_data"
+    # Send config to the client and run mock container
+    send_config_to_client(client.ip_address, 'mmdhosein', 'Hosein_77')
 
-    # Send configuration to the client
-    send_config_to_client(client.ip_address, 'mmdhosein', 'Hosein_77', config)
+    app = celery.Celery('testProject', broker='memory://127.0.0.1:6379')
 
-    # Run Docker container on the client
-    # result = run_docker_container(client.ip_address, 'mmdhosein', 'Hosein_77')
-    result = 0
-    # Mocked data for testing
+    # Get information about active tasks
+    inspect_result = app.control.inspect('ca583517-899b-4aec-84e3-57d10f0a7ae5').report
 
-    # Asynchronously process the received data
-    process_received_data.delay()
+    # Extract argsrepr information from the active tasks
+    argsrepr_list = [task['argsrepr'] for tasks in inspect_result.values() for task in tasks] if inspect_result else []
 
-    return render(request, 'success.html', {'result': result})
+    # Print the argsrepr information
+    for argsrepr in argsrepr_list:
+        # Asynchronously process the received data
+        process_received_data(argsrepr).delay()
 
+    return render(request, 'success.html', {'result': 'get tasks from mock client ans save in DB'})
