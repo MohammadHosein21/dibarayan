@@ -12,9 +12,7 @@ class DataModel(models.Model):
     stream_id = models.IntegerField()
     timestamp = models.DateTimeField()
     status = models.CharField(max_length=1, choices=[('D', 'Danger'), ('S', 'Safe')])
-    log_type = models.CharField(max_length=10)
-    coordinates = models.JSONField()
-    thumbnail = models.TextField()
+    log = models.JSONField()
     session_id = models.UUIDField()
 
     def __str__(self):

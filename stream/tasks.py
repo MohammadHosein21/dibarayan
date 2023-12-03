@@ -13,11 +13,9 @@ def process_received_data(message):
         # Process and save data to the database
         DataModel.objects.create(
             stream_id=data['stream_id'],
-            timestamp=timezone.now(),
+            timestamp=data['timestamp'],
             status=data['status'],
-            log_type=data['log']['type'],
-            coordinates=data['log']['coordinates'],
-            thumbnail=data['log']['thumbnail'],
+            log=data['log'],
             session_id=data['session_id']
         )
 
